@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+
+    <version>7.0.53-SNAPSHOT</version>
+
+    <groupId>com.demo</groupId>
+    <artifactId>common-demo</artifactId>
+    <name>common-demon</name>
+
+
+
+
+
+    <properties>
+        <!-- Sonar Properties -->
+        <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <jacoco.version>0.8.10</jacoco.version>
+        <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
+        <jacoco.outputDir>${project.build.directory}</jacoco.outputDir>
+        <jacoco.out.ut.file>jacoco-ut.exec</jacoco.out.ut.file>
+        <sonar.jacoco.ReportPath>${jacoco.outputDir}/${jacoco.out.ut.file}</sonar.jacoco.ReportPath>
+        <!-- Sonar Properties -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <dockerimage.tag>latest</dockerimage.tag>
+        <docker.repo.name>mdm-docker.artifacts.cloudtrust.rocks</docker.repo.name>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
+        <maven.jar.plugin.version>2.5</maven.jar.plugin.version>
+        <maven.docker.plugin.version>1.0.0</maven.docker.plugin.version>
+        <maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
+        <asciidoctor-maven-plugin.version>1.5.3</asciidoctor-maven-plugin.version>
+
+        <!-- External Dependencies Properties -->
+        <powermock.version>2.0.9</powermock.version>
+        <commons-lang.version>2.4</commons-lang.version>
+        <json.version>20231013.0.0.redhat-00001</json.version>
+        <elasticsearch.version>7.17.22</elasticsearch.version>
+        <opentracing-elasticsearch7-client.version>0.1.6</opentracing-elasticsearch7-client.version>
+        <okio.version>3.4.0</okio.version>
+        <snappyjava.version>1.1.10.5</snappyjava.version>
+
+        <!-- MDM-related Dependencies -->
+        <mdmcommons-spring-security.version>5.0.6</mdmcommons-spring-security.version>
+        <mdmcommons-spring-rest-error-standardization.version>4.1.0</mdmcommons-spring-rest-error-standardization.version>
+        <mdmcommons-spring-mongo.version>4.0.2</mdmcommons-spring-mongo.version>
+        <mdmcommons-security-https.version>4.0.6</mdmcommons-security-https.version>
+        <mdm-metrics.version>3.0.7</mdm-metrics.version>
+        <bes.dependency.version>5.0.10</bes.dependency.version>
+        <authorization-framework.version>7.2.0</authorization-framework.version>
+        <mdmcommons.rest.client.version>4.1.9</mdmcommons.rest.client.version>
+        <mdmcommons-featuretoggles.version>4.0.3</mdmcommons-featuretoggles.version>
+
+        <!-- sonar related properties -->
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.host.url>http://mdmsonar.informatica.com</sonar.host.url>
+        <sonar.qualitygate.wait>true</sonar.qualitygate.wait>
+        <sonar.issuesReport.console.enable>true</sonar.issuesReport.console.enable>
+        <sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
+        <sonar.issuesReport.json.enable>true</sonar.issuesReport.json.enable>
+        <sonar.dependencyCheck.reportPath>${project.build.directory}/dependency-check-report.xml</sonar.dependencyCheck.reportPath>
+        <sonar.dependencyCheck.htmlReportPath>${project.build.directory}/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.11.3</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.owasp</groupId>
+                    <artifactId>dependency-check-maven</artifactId>
+                    <version>6.4.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <releaseProfiles>releases</releaseProfiles>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>${jacoco.agent.ut.arg}
+                                --add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
+                            <!-- Specific to generate mapping between tests and covered code -->
+                            <properties>
+                                <property>
+                                    <name>listener</name>
+                                    <value>org.sonar.java.jacoco.JUnitListener</value>
+                                </property>
+                            </properties>
+                            <!-- test failure ignore -->
+                            <testFailureIgnore>false</testFailureIgnore>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <argLine>-Xmx1024m
+                                --add-opens=java.base/java.lang=ALL-UNNAMED
+                            </argLine>
+                            <!-- Specific to generate mapping between tests and covered code -->
+                            <properties>
+                                <property>
+                                    <name>listener</name>
+                                    <value>org.sonar.java.jacoco.JUnitListener</value>
+                                </property>
+                            </properties>
+                            <!-- Let's put failsafe reports with surefire to have access to tests
+                                failures/success reports in sonar -->
+                            <reportsDirectory>${project.build.directory}/surefire-reports
+                            </reportsDirectory>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.version}</version>
+                        <configuration>
+                            <includes>
+                                <include>com/infa/**/*</include>
+                                <include>com/informatica/**/*</include>
+                            </includes>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>pre-unit-test</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                                <configuration>
+                                    <destFile>${sonar.jacoco.reportPath}</destFile>
+                                    <propertyName>jacoco.agent.ut.arg</propertyName>
+                                    <append>true</append>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>post-unit-test</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Sets the path to the file which contains the execution data. -->
+                                    <dataFile>${project.build.directory}/jacoco.exec</dataFile>
+                                    <!-- Sets the output directory for the code coverage report. -->
+                                    <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>org.codehaus.sonar-plugins.java</groupId>
+                    <artifactId>sonar-jacoco-listeners</artifactId>
+                    <version>${sonar-jacoco-listeners.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>security</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>aggregate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
+                            <format>HTML</format>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
