@@ -73,17 +73,6 @@
         <okio.version>3.4.0</okio.version>
         <snappyjava.version>1.1.10.5</snappyjava.version>
 
-        <!-- MDM-related Dependencies -->
-        <mdmcommons-spring-security.version>5.0.6</mdmcommons-spring-security.version>
-        <mdmcommons-spring-rest-error-standardization.version>4.1.0</mdmcommons-spring-rest-error-standardization.version>
-        <mdmcommons-spring-mongo.version>4.0.2</mdmcommons-spring-mongo.version>
-        <mdmcommons-security-https.version>4.0.6</mdmcommons-security-https.version>
-        <mdm-metrics.version>3.0.7</mdm-metrics.version>
-        <bes.dependency.version>5.0.10</bes.dependency.version>
-        <authorization-framework.version>7.2.0</authorization-framework.version>
-        <mdmcommons.rest.client.version>4.1.9</mdmcommons.rest.client.version>
-        <mdmcommons-featuretoggles.version>4.0.3</mdmcommons-featuretoggles.version>
-
         <!-- sonar related properties -->
         <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
         <sonar.host.url>http://mdmsonar.informatica.com</sonar.host.url>
